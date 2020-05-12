@@ -1,8 +1,10 @@
 #!/bin/bash
 
-ILO_IP=192.168.5.129
-BOOT_URL=http://192.168.3.17:8000/bootx64.efi
-OUTPUT=log.log
+ILO_IP=16.124.128.51
+ILO_USER=
+ILO_PASSWORD=
+BOOT_URL=http://16.114.218.252:8000/bootx64.efi
+OUTPUT=/dev/null
 
 function power {
   STATE=$1
@@ -22,8 +24,8 @@ function power {
 }
 
 function login {
-  AUTH_TOKEN="$(curl -k -sD - -o /dev/null  "https://192.168.5.129/redfish/v1/SessionService/Sessions/" \
-    -X POST -d '{"UserName":"quake", "Password": "Quattro8337"}' \
+  AUTH_TOKEN="$(curl -k -sD - -o /dev/null  "https://$ILO_IP/redfish/v1/SessionService/Sessions/" \
+    -X POST -d "{\"UserName\":\"$ILO_USER\", \"Password\": \"$ILO_PASSWORD\"}" \
     -H "Content-Type: application/json"  | awk '/X-Auth-Token/ {print $2}')"
 }
 
@@ -35,7 +37,7 @@ echo Ensuring the server is powered off
 power Off
 
 echo Programming Boot URL to $BOOT_URL
-curl -s -k "https://192.168.5.129/redfish/v1/systems/1/bios/settings/" -X PATCH -d '{"Attributes":{"UrlBootFile":"http://192.168.3.17:8000/bootx64.efi"}}' -H "Content-Type: application/json" -H "X-Auth-Token: $AUTH_TOKEN" &> $OUTPUT
+curl -s -k "https://$ILO_IP/redfish/v1/systems/1/bios/settings/" -X PATCH -d "{\"Attributes\":{\"UrlBootFile\":\"$BOOT_URL\"}}" -H "Content-Type: application/json" -H "X-Auth-Token: $AUTH_TOKEN" &> $OUTPUT
 
 
 power On
