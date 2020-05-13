@@ -1,10 +1,10 @@
 #!/bin/bash
 
-ILO_IP=16.124.128.51
+ILO_IP=192.168.5.129
 ILO_USER=
 ILO_PASSWORD=
-BOOT_URL=http://16.114.218.252:8000/bootx64.efi
-OUTPUT=/dev/null
+BOOT_URL=http://192.168.3.17:8000/bootx64.efi
+OUTPUT=log.log
 
 function power {
   STATE=$1
@@ -29,6 +29,8 @@ function login {
     -H "Content-Type: application/json"  | awk '/X-Auth-Token/ {print $2}')"
 }
 
+#erase log file
+echo > $OUTPUT
 
 echo Attempting Login to $ILO_IP
 login
